@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espetinho Delivery ZD</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pedido-container {
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background-color: #f8f8f8;
+        }
+        .pedido-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .categoria {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Faça Seu Pedido no Espetinho Delivery ZD</h1>
+            <img src="imagens/logo.png" alt="Logo Espetinho Delivery ZD" class="logo">
+        </header>
+
+        <div class="pedido-quantidade">
+            <h3>Quantos Espetinhos você deseja?</h3>
+            <input type="number" id="quantidadePedidos" min="1" value="1" onchange="atualizarPedidos()">
+        </div>
+
+        <div id="pedidosContainer"></div>
+
+        <button id="finalizarPedido" onclick="finalizarPedido()">Finalizar Pedido</button>
+    </div>
+
+    <script>
+        function atualizarPedidos() {
+            const quantidade = document.getElementById('quantidadePedidos').value;
+            const pedidosContainer = document.getElementById('pedidosContainer');
+            pedidosContainer.innerHTML = '';
+
+            for (let i = 0; i < quantidade; i++) {
+                const pedidoContainer = document.createElement('div');
+                pedidoContainer.classList.add('pedido-container');
+                pedidoContainer.innerHTML = `<h3>Pedido ${i + 1}</h3>`;
+
+                const pedidoSection = document.createElement('div');
+                pedidoSection.classList.add('pedido-section');
+
+                const espetos = document.createElement('div');
+                espetos.classList.add('categoria');
+                espetos.innerHTML = `
+                    <h4>Escolha o Espeto:</h4>
+                    <label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado" data-preco="18"> Gado - R$18,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Frango" data-preco="15"> Frango - R$15,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Toscana" data-preco="15"> Toscana - R$15,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado e Toscana" data-preco="15"> Gado e Toscana - R$15,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado e Frango" data-preco="15"> Gado e Frango - R$15,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Toscana e Frango" data-preco="15"> Toscana e Frango - R$15,00</label><br>
+<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado, Frango e Toscana" data-preco="15"> Gado, Frango e Toscana - R$15,00</label><br>
+                `;
+
+                const arroz = document.createElement('div');
+                arroz.classList.add('categoria');
+                arroz.innerHTML = `
+                    <h4>Escolha o Arroz:</h4>
+                    <label><input type="radio" name="arroz_${i}" value="Baião de Dois"> Baião de Dois</label><br>
+                    <label><input type="radio" name="arroz_${i}" value="Arroz de Cenoura"> Arroz de Cenoura</label><br>
+                    <label><input type="radio" name="arroz_${i}" value="Sem arroz"> Sem Arroz</label><br>
+                `;
+
+                const acompanhamentos = document.createElement('div');
+                acompanhamentos.classList.add('categoria');
+                acompanhamentos.innerHTML = `
+                    <h4>Escolha os Acompanhamentos:</h4>
+                    <label><input type="checkbox" value="Salada"> Salada</label><br>
+                    <label><input type="checkbox" value="Purê de Batata"> Purê de Batata</label><br>
+                    <label><input type="checkbox" value="Farofa"> Farofa</label><br>
+                `;
+
+                pedidoSection.appendChild(espetos);
+                pedidoSection.appendChild(arroz);
+                pedidoSection.appendChild(acompanhamentos);
+                pedidoContainer.appendChild(pedidoSection);
+                pedidosContainer.appendChild(pedidoContainer);
+            }
+        }
+
+        function finalizarPedido() {
+            const espetoSelecionado = [];
+            const arrozSelecionado = [];
+            const acompanhamentosSelecionado = [];
+            let algumItemSelecionado = false;
+            let mensagem = "Olá, gostaria de fazer um pedido no Espetinho Delivery ZD:\n";
+
+            // Iterando sobre todos os pedidos
+            const pedidos = document.querySelectorAll('.pedido-section');
+            pedidos.forEach((pedido, index) => {
+                let espeto = [];
+                let arroz = [];
+                let acompanhamentos = [];
+
+                // Coletando os itens selecionados de espeto
+                pedido.querySelectorAll('.espeto:checked').forEach(function(espetoItem) {
+                    espeto.push(espetoItem.getAttribute('data-nome'));
+                    algumItemSelecionado = true;
+                });
+
+                // Coletando os itens selecionados de arroz
+                pedido.querySelectorAll('.arroz:checked').forEach(function(arrozItem) {
+                    arroz.push(arrozItem.getAttribute('data-nome'));
+                    algumItemSelecionado = true;
+                });
+
+                // Coletando os itens selecionados de acompanhamentos
+                pedido.querySelectorAll('.acompanhamentos:checked').forEach(function(acompanhamentoItem) {
+                    acompanhamentos.push(acompanhamentoItem.getAttribute('data-nome'));
+                    algumItemSelecionado = true;
+                });
+
+                // Verificando se pelo menos uma opção foi selecionada em cada categoria
+                if (espeto.length === 0 || arroz.length === 0 || acompanhamentos.length === 0) {
+                    alert('Você deve escolher ao menos um espeto, um arroz e um acompanhamento para finalizar o pedido!');
+                    return;
+                }
+
+                // Adicionando os detalhes do pedido na mensagem
+                mensagem += `\n\nPedido ${index + 1}:\n`;
+                mensagem += `Espetos: ${espeto.join(", ")}\n`;
+                mensagem += `Arroz: ${arroz.join(", ")}\n`;
+                mensagem += `Acompanhamentos: ${acompanhamentos.join(", ")}\n`;
+            });
+
+            // Verificando se algum item foi selecionado
+            if (!algumItemSelecionado) {
+                alert('Você deve escolher ao menos um item em cada categoria para finalizar o pedido!');
+                return;
+            }
+
+            // Encaminhando para o WhatsApp com a mensagem
+            const numeroWhatsApp = "5511999999999"; // Substitua pelo seu número de WhatsApp (com DDD)
+            const urlWhatsApp = `https://wa.me/${5598985349559}?text=${encodeURIComponent(mensagem)}`;
+            
+            // Abrir o WhatsApp
+            window.open(urlWhatsApp, "_blank");
+        }
+
+        // Chama a função de atualização dos pedidos inicialmente
+        atualizarPedidos();
+    </script>
+</body>
+</html>
