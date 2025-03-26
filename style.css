@@ -136,7 +136,8 @@ button {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 25
+px;
     transition: background-color 0.3s ease;
 }
 

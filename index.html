@@ -23,13 +23,16 @@
             min-width: 200px;
             padding: 10px;
         }
+        .endereco {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Faça Seu Pedido no Espetinho Delivery ZD</h1>
-            <img src="logo.png" alt="Logo Espetinho Delivery ZD" class="logo">
+            <img src="imagens/logo.png" alt="Logo Espetinho Delivery ZD" class="logo">
         </header>
 
         <div class="pedido-quantidade">
@@ -37,12 +40,32 @@
             <input type="number" id="quantidadePedidos" min="1" value="1" onchange="atualizarPedidos()">
         </div>
 
+
         <div id="pedidosContainer"></div>
 
+         <!-- Caixa de Texto para o Endereço -->
+         <div class="endereco">
+            <h3>Informe seu Endereço de Entrega:</h3>
+            <textarea id="enderecoEntrega" rows="4" placeholder="Digite o endereço de entrega..."></textarea>
+        </div>
+
+
         <button id="finalizarPedido" onclick="finalizarPedido()">Finalizar Pedido</button>
+
+
     </div>
 
     <script>
+        const precoEspeto = {
+            "Gado": 18.00,
+            "Frango": 15.00,
+            "Toscana": 15.00,
+            "Gado e Toscana": 15.00,
+            "Gado e Frango": 15.00,
+            "Toscana e Frango": 15.00,
+            "Gado, Frango e Toscana": 15.00
+        };
+
         function atualizarPedidos() {
             const quantidade = document.getElementById('quantidadePedidos').value;
             const pedidosContainer = document.getElementById('pedidosContainer');
@@ -58,15 +81,15 @@
 
                 const espetos = document.createElement('div');
                 espetos.classList.add('categoria');
-                espetos.innerHTML = `
+                espetos.innerHTML = ` 
                     <h4>Escolha o Espeto:</h4>
-                    <label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado" data-preco="18"> Gado - R$18,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Frango" data-preco="15"> Frango - R$15,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Toscana" data-preco="15"> Toscana - R$15,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado e Toscana" data-preco="15"> Gado e Toscana - R$15,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado e Frango" data-preco="15"> Gado e Frango - R$15,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Toscana e Frango" data-preco="15"> Toscana e Frango - R$15,00</label><br>
-<label><input type="radio" name="espeto_{{i}}" class="espeto" data-nome="Gado, Frango e Toscana" data-preco="15"> Gado, Frango e Toscana - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Gado"> Gado - R$18,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Frango"> Frango - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Toscana"> Toscana - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Gado e Toscana"> Gado e Toscana - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Gado e Frango"> Gado e Frango - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Toscana e Frango"> Toscana e Frango - R$15,00</label><br>
+                    <label><input type="radio" name="espeto_${i}" value="Gado, Frango e Toscana"> Gado, Frango e Toscana - R$15,00</label><br>
                 `;
 
                 const arroz = document.createElement('div');
@@ -82,11 +105,11 @@
                 acompanhamentos.classList.add('categoria');
                 acompanhamentos.innerHTML = `
                     <h4>Escolha os Acompanhamentos:</h4>
-                    <label><input type="checkbox" value="Salada"> Salada</label><br>
-                    <label><input type="checkbox" value="Purê de Batata"> Purê de Batata</label><br>
-                    <label><input type="checkbox" value="Farofa"> Farofa</label><br>
-                    <label><input type="checkbox" value="Vatapá de camarão com pimenta"> Vatapá de camarão com pimenta</label><br>
-                    <label><input type="checkbox" value="Vatapá de camarão sem pimenta"> Vatapá de camarão sem pimenta</label><br>
+                    <label><input type="checkbox" name="acompanhamentos_${i}" value="Salada"> Salada</label><br>
+                    <label><input type="checkbox" name="acompanhamentos_${i}" value="Purê de Batata"> Purê de Batata</label><br>
+                    <label><input type="checkbox" name="acompanhamentos_${i}" value="Farofa"> Farofa</label><br>
+                    <label><input type="checkbox" name="acompanhamentos_${i}" value="Vatapá de camarão com pimenta"> Vatapá de camarão com pimenta</label><br>
+                    <label><input type="checkbox" name="acompanhamentos_${i}" value="Vatapá de camarão sem pimenta"> Vatapá de camarão sem pimenta</label><br>
                 `;
 
                 pedidoSection.appendChild(espetos);
@@ -98,65 +121,65 @@
         }
 
         function finalizarPedido() {
-            const espetoSelecionado = [];
-            const arrozSelecionado = [];
-            const acompanhamentosSelecionado = [];
-            let algumItemSelecionado = false;
+            const endereco = document.getElementById('enderecoEntrega').value;
+            if (!endereco) {
+                alert('Você deve informar um endereço de entrega!');
+                return;
+            }
+
             let mensagem = "Olá, gostaria de fazer um pedido no Espetinho Delivery ZD:\n";
+            mensagem += `Endereço de Entrega: ${endereco}\n`;
 
-            // Iterando sobre todos os pedidos
             const pedidos = document.querySelectorAll('.pedido-section');
+            let algumItemSelecionado = false;
+            let totalPedido = 0;
+            let quantidadePedidos = 0;
+
             pedidos.forEach((pedido, index) => {
-                let espeto = [];
-                let arroz = [];
-                let acompanhamentos = [];
+                let espeto = pedido.querySelector(`input[name="espeto_${index}"]:checked`);
+                let arroz = pedido.querySelector(`input[name="arroz_${index}"]:checked`);
+                let acompanhamentos = pedido.querySelectorAll(`input[name="acompanhamentos_${index}"]:checked`);
 
-                // Coletando os itens selecionados de espeto
-                pedido.querySelectorAll('.espeto:checked').forEach(function(espetoItem) {
-                    espeto.push(espetoItem.getAttribute('data-nome'));
-                    algumItemSelecionado = true;
-                });
-
-                // Coletando os itens selecionados de arroz
-                pedido.querySelectorAll('.arroz:checked').forEach(function(arrozItem) {
-                    arroz.push(arrozItem.getAttribute('data-nome'));
-                    algumItemSelecionado = true;
-                });
-
-                // Coletando os itens selecionados de acompanhamentos
-                pedido.querySelectorAll('.acompanhamentos:checked').forEach(function(acompanhamentoItem) {
-                    acompanhamentos.push(acompanhamentoItem.getAttribute('data-nome'));
-                    algumItemSelecionado = true;
-                });
-
-                // Verificando se pelo menos uma opção foi selecionada em cada categoria
-                if (espeto.length === 0 || arroz.length === 0 || acompanhamentos.length === 0) {
-                    alert('Você deve escolher ao menos um espeto, um arroz e um acompanhamento para finalizar o pedido!');
+                if (!espeto || !arroz) {
+                    alert('Você deve escolher ao menos um espeto e um arroz para finalizar o pedido!');
                     return;
                 }
 
-                // Adicionando os detalhes do pedido na mensagem
+                if (acompanhamentos.length === 0) {
+                    alert('Você deve escolher ao menos um acompanhamento para finalizar o pedido!');
+                    return;
+                }
+
+                algumItemSelecionado = true;
+                quantidadePedidos++;
+
+                let valorEspeto = precoEspeto[espeto.value];
+                totalPedido += valorEspeto;
+
                 mensagem += `\n\nPedido ${index + 1}:\n`;
-                mensagem += `Espetos: ${espeto.join(", ")}\n`;
-                mensagem += `Arroz: ${arroz.join(", ")}\n`;
-                mensagem += `Acompanhamentos: ${acompanhamentos.join(", ")}\n`;
+                mensagem += `Espeto: ${espeto.value}\n`;
+                mensagem += `Arroz: ${arroz.value}\n`;
+
+                let acompList = [];
+                acompanhamentos.forEach(acomp => acompList.push(acomp.value));
+                mensagem += `Acompanhamentos: ${acompList.length > 0 ? acompList.join(", ") : "Nenhum"}\n`;
             });
 
-            // Verificando se algum item foi selecionado
             if (!algumItemSelecionado) {
                 alert('Você deve escolher ao menos um item em cada categoria para finalizar o pedido!');
                 return;
             }
 
-            // Encaminhando para o WhatsApp com a mensagem
-            const numeroWhatsApp = "5511999999999"; // Substitua pelo seu número de WhatsApp (com DDD)
-            const urlWhatsApp = `https://wa.me/${5598985349559}?text=${encodeURIComponent(mensagem)}`;
-            
-            // Abrir o WhatsApp
+            let taxaEntrega = quantidadePedidos === 1 ? 2.00 : 0.00;
+            totalPedido += taxaEntrega;
+
+            mensagem += `\nValor Total do Pedido: R$ ${totalPedido.toFixed(2)}\n`;
+        
+
+            const urlWhatsApp = `https://wa.me/5598985349559?text=${encodeURIComponent(mensagem)}`;
             window.open(urlWhatsApp, "_blank");
         }
 
-        // Chama a função de atualização dos pedidos inicialmente
         atualizarPedidos();
     </script>
 </body>
